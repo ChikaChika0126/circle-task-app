@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>サークル タスクステーション (Task visualizer)</title>
+    <title>サークル タスクステーション</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -61,8 +61,7 @@
                     <i class="fa-solid font-bold fa-list-check text-lg"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg leading-tight text-slate-900 dark:text-white">タスク</h1>
-                   
+                    <h1 class="font-bold text-lg leading-tight text-slate-900 dark:text-white">タスクステーション</h1>
                 </div>
             </div>
 
@@ -75,8 +74,9 @@
                     <select id="user-selector" onchange="changeCurrentUser(this.value)" class="bg-transparent text-sm font-medium focus:outline-none dark:text-white cursor-pointer pr-1">
                         <!-- Populated by JS -->
                     </select>
-                    <button onclick="openAddMemberModal()" title="メンバー追加" class="text-xs bg-white dark:bg-slate-600 hover:bg-slate-50 dark:hover:bg-slate-500 p-1.5 rounded-md shadow-sm border border-slate-200 dark:border-slate-500">
-                        <i class="fa-solid fa-plus text-slate-600 dark:text-slate-200"></i>
+                    <button onclick="openMemberModal()" title="メンバー追加・管理" class="text-xs bg-white dark:bg-slate-600 hover:bg-slate-50 dark:hover:bg-slate-500 p-1.5 rounded-md shadow-sm border border-slate-200 dark:border-slate-500 flex items-center gap-1">
+                        <i class="fa-solid fa-user-plus text-slate-600 dark:text-slate-200"></i>
+                        <span class="hidden sm:inline text-xs font-semibold">管理</span>
                     </button>
                 </div>
 
@@ -96,16 +96,13 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                 <div>
                     <h2 class="font-bold text-slate-900 dark:text-white text-base flex items-center gap-2">
-                        <i class="fa-solid fa-users text-brand-500"></i> 今日のメンバー状況
+                        <i class="fa-solid fa-users text-brand-500"></i> メンバー一覧と現在の状況
                     </h2>
                     <p class="text-xs text-slate-500 dark:text-slate-400">アイコンをタップするとその人の担当タスクのみに絞り込めます</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <button onclick="openAddTaskModal()" class="w-full sm:w-auto bg-brand-500 hover:bg-brand-600 text-white font-medium text-sm px-4 py-2 rounded-xl flex items-center justify-center gap-2 shadow-sm transition-all">
                         <i class="fa-solid fa-plus"></i> タスクを追加
-                    </button>
-                    <button onclick="resetDemoData()" title="初期データに戻す" class="p-2 text-xs text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
-                        <i class="fa-solid fa-rotate-right"></i> リセット
                     </button>
                 </div>
             </div>
@@ -123,7 +120,7 @@
                 <button onclick="clearFilter()" class="hover:text-red-500 ml-1"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="text-xs text-slate-500 dark:text-slate-400 ml-auto">
-                <i class="fa-solid fa-circle-info mr-1"></i>カードをタップして「担当にする」と着手できます
+                <i class="fa-solid fa-circle-info mr-1"></i>カードをタップして「担当する」と着手できます
             </div>
         </div>
 
@@ -236,13 +233,13 @@
     <div id="member-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-xl border border-slate-200 dark:border-slate-700">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-slate-900 dark:text-white">メンバーを追加</h3>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">メンバー管理</h3>
                 <button onclick="closeMemberModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             
-            <form onsubmit="handleMemberSubmit(event)" class="space-y-4">
+            <form onsubmit="handleMemberSubmit(event)" class="space-y-4 mb-6">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">名前 *</label>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">新しいメンバー名 *</label>
                     <input type="text" id="member-name" required placeholder="例: たろう" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white">
                 </div>
 
@@ -257,31 +254,19 @@
                     </div>
                 </div>
 
-                <div class="flex gap-2 pt-2">
-                    <button type="button" onclick="closeMemberModal()" class="flex-1 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 rounded-xl">キャンセル</button>
-                    <button type="submit" class="flex-1 py-2 text-sm font-medium text-white bg-brand-500 hover:bg-brand-600 rounded-xl shadow-sm">追加</button>
-                </div>
+                <button type="submit" class="w-full py-2 text-sm font-medium text-white bg-brand-500 hover:bg-brand-600 rounded-xl shadow-sm">+ 追加する</button>
             </form>
+
+            <div class="border-t border-slate-200 dark:border-slate-700 pt-4">
+                <h4 class="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">登録中のメンバー</h4>
+                <div id="managed-member-list" class="max-h-40 overflow-y-auto space-y-2 custom-scrollbar">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Initial Default Data
-        const DEFAULT_MEMBERS = [
-            { id: 'm1', name: 'けんた', color: 'bg-indigo-500' },
-            { id: 'm2', name: 'さくら', color: 'bg-rose-500' },
-            { id: 'm3', name: 'たくみ', color: 'bg-emerald-500' },
-            { id: 'm4', name: 'あおい', color: 'bg-amber-500' },
-        ];
-
-        const DEFAULT_TASKS = [
-            { id: 't1', title: '部室の鍵を開ける・受付設置', desc: '9:00までに会場集合して机を配置', category: '会場設営', status: 'done', assigneeId: 'm1', updatedAt: Date.now() - 3600000 },
-            { id: 't2', title: 'プロジェクターと音響チェック', desc: 'マイクテストとスライド接続確認', category: '企画・運営', status: 'in_progress', assigneeId: 'm3', updatedAt: Date.now() - 1800000 },
-            { id: 't3', title: 'SNSで開始告知投稿', desc: 'XとInstagramに写真付きでポスト', category: '広報・SNS', status: 'in_progress', assigneeId: 'm2', updatedAt: Date.now() - 900000 },
-            { id: 't4', title: '来場者アンケート用紙印刷', desc: '50部印刷してクリアファイルに入れる', category: '会計・資材', status: 'todo', assigneeId: null, updatedAt: Date.now() },
-            { id: 't5', title: '片付け・ゴミ分別', desc: 'イベント終了後の清掃作業', category: '会場設営', status: 'todo', assigneeId: null, updatedAt: Date.now() },
-        ];
-
         // State Management
         let members = [];
         let tasks = [];
@@ -309,10 +294,11 @@
             const savedTasks = localStorage.getItem('club_app_tasks');
             const savedUser = localStorage.getItem('club_app_current_user');
 
-            members = savedMembers ? JSON.parse(savedMembers) : [...DEFAULT_MEMBERS];
-            tasks = savedTasks ? JSON.parse(savedTasks) : [...DEFAULT_TASKS];
+            // 初期データは空の配列にする
+            members = savedMembers ? JSON.parse(savedMembers) : [];
+            tasks = savedTasks ? JSON.parse(savedTasks) : [];
             
-            currentUser = savedUser ? members.find(m => m.id === savedUser) || members[0] : members[0];
+            currentUser = savedUser ? members.find(m => m.id === savedUser) || members[0] || null : members[0] || null;
             
             saveState();
         }
@@ -322,31 +308,32 @@
             localStorage.setItem('club_app_tasks', JSON.stringify(tasks));
             if (currentUser) {
                 localStorage.setItem('club_app_current_user', currentUser.id);
+            } else {
+                localStorage.removeItem('club_app_current_user');
             }
-        }
-
-        function resetDemoData() {
-            members = [...DEFAULT_MEMBERS];
-            tasks = [...DEFAULT_TASKS];
-            currentUser = members[0];
-            selectedFilterUser = null;
-            saveState();
-            renderAll();
         }
 
         function renderAll() {
             renderUserDropdown();
             renderMemberHeader();
             renderKanban();
+            renderManagedMemberList();
         }
 
         function renderUserDropdown() {
             const select = document.getElementById('user-selector');
             const avatar = document.getElementById('current-user-avatar');
             
+            if (members.length === 0) {
+                select.innerHTML = '<option value="">メンバーなし</option>';
+                avatar.className = `w-7 h-7 rounded-full bg-slate-400 text-white flex items-center justify-center text-xs font-bold`;
+                avatar.innerText = '?';
+                return;
+            }
+
             select.innerHTML = members.map(m => `
                 <option value="${m.id}" ${currentUser && currentUser.id === m.id ? 'selected' : ''}>
-                    ${m.name} (自分)
+                    ${escapeHtml(m.name)} (自分)
                 </option>
             `).join('');
 
@@ -359,8 +346,16 @@
         function renderMemberHeader() {
             const container = document.getElementById('member-status-list');
             
+            if (members.length === 0) {
+                container.innerHTML = `
+                    <div class="text-xs text-slate-400 p-2">
+                        メンバーが登録されていません。右上の「管理」から追加してください。
+                    </div>
+                `;
+                return;
+            }
+
             container.innerHTML = members.map(m => {
-                // Find task currently worked on
                 const activeTask = tasks.find(t => t.assigneeId === m.id && t.status === 'in_progress');
                 const isSelected = selectedFilterUser === m.id;
 
@@ -369,17 +364,17 @@
                          class="cursor-pointer transition-all flex-shrink-0 flex items-center gap-3 p-2.5 pr-4 rounded-xl border ${isSelected ? 'border-brand-500 bg-brand-50/80 dark:bg-brand-950/40 ring-2 ring-brand-500/30' : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/40 hover:bg-white dark:hover:bg-slate-700'}">
                         <div class="relative">
                             <div class="w-10 h-10 rounded-full ${m.color} text-white flex items-center justify-center font-bold text-sm shadow-sm">
-                                ${m.name.charAt(0)}
+                                ${escapeHtml(m.name.charAt(0))}
                             </div>
                             ${activeTask ? '<span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full"></span>' : ''}
                         </div>
                         <div>
                             <div class="flex items-center gap-1.5">
-                                <span class="font-bold text-xs text-slate-800 dark:text-slate-100">${m.name}</span>
+                                <span class="font-bold text-xs text-slate-800 dark:text-slate-100">${escapeHtml(m.name)}</span>
                                 ${currentUser && currentUser.id === m.id ? '<span class="text-[10px] bg-slate-200 dark:bg-slate-600 px-1.5 py-0.2 rounded text-slate-600 dark:text-slate-200">自分</span>' : ''}
                             </div>
                             <p class="text-[11px] text-slate-500 dark:text-slate-400 max-w-[120px] truncate">
-                                ${activeTask ? `<span class="text-brand-600 dark:text-brand-400 font-semibold">${activeTask.title}</span>` : '待機中'}
+                                ${activeTask ? `<span class="text-brand-600 dark:text-brand-400 font-semibold">${escapeHtml(activeTask.title)}</span>` : '待機中'}
                             </p>
                         </div>
                     </div>
@@ -396,10 +391,8 @@
 
             const counts = { todo: 0, in_progress: 0, done: 0 };
 
-            // Clear columns
             Object.values(cols).forEach(col => col.innerHTML = '');
 
-            // Filter tasks if filter is active
             const filteredTasks = selectedFilterUser 
                 ? tasks.filter(t => t.assigneeId === selectedFilterUser) 
                 : tasks;
@@ -410,12 +403,10 @@
                 cols[task.status].appendChild(card);
             });
 
-            // Update Counts
             document.getElementById('count-todo').innerText = counts.todo;
             document.getElementById('count-in_progress').innerText = counts.in_progress;
             document.getElementById('count-done').innerText = counts.done;
 
-            // Empty State
             Object.keys(cols).forEach(status => {
                 if (cols[status].children.length === 0) {
                     cols[status].innerHTML = `
@@ -426,7 +417,6 @@
                 }
             });
 
-            // Update Filter Badge Indicator
             const badge = document.getElementById('active-filter-badge');
             if (selectedFilterUser) {
                 const user = members.find(m => m.id === selectedFilterUser);
@@ -453,7 +443,7 @@
             div.innerHTML = `
                 <div class="flex items-start justify-between gap-2 mb-2">
                     <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${catClass}">
-                        ${task.category}
+                        ${escapeHtml(task.category)}
                     </span>
                     <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button onclick="openEditTaskModal('${task.id}')" class="text-slate-400 hover:text-brand-500 p-1 text-xs"><i class="fa-solid fa-pen"></i></button>
@@ -465,19 +455,17 @@
                 ${task.desc ? `<p class="text-xs text-slate-500 dark:text-slate-400 mb-3 line-clamp-2">${escapeHtml(task.desc)}</p>` : ''}
 
                 <div class="pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between gap-2 mt-2">
-                    <!-- Assignee Info -->
                     <div class="flex items-center gap-1.5 min-w-0">
                         ${assignee ? `
                             <div class="w-6 h-6 rounded-full ${assignee.color} text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0">
-                                ${assignee.name.charAt(0)}
+                                ${escapeHtml(assignee.name.charAt(0))}
                             </div>
-                            <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">${assignee.name}</span>
+                            <span class="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">${escapeHtml(assignee.name)}</span>
                         ` : `
                             <span class="text-xs text-slate-400 italic">未割り当て</span>
                         `}
                     </div>
 
-                    <!-- Action Button -->
                     <div class="flex items-center gap-1">
                         ${task.status === 'todo' ? `
                             <button onclick="claimTask('${task.id}')" class="text-xs bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-300 hover:bg-brand-500 hover:text-white px-2.5 py-1 rounded-lg border border-brand-200 dark:border-brand-800 font-medium transition-colors flex items-center gap-1">
@@ -506,13 +494,16 @@
         }
 
         function changeCurrentUser(memberId) {
-            currentUser = members.find(m => m.id === memberId);
+            currentUser = members.find(m => m.id === memberId) || null;
             saveState();
             renderAll();
         }
 
         function claimTask(taskId) {
-            if (!currentUser) return;
+            if (!currentUser) {
+                alert('最初にメンバーを登録し、ログイン者として選択してください。');
+                return;
+            }
             const task = tasks.find(t => t.id === taskId);
             if (task) {
                 task.assigneeId = currentUser.id;
@@ -571,7 +562,6 @@
             
             if (task) {
                 task.status = newStatus;
-                // Auto-assign to current user if moved to in_progress and unassigned
                 if (newStatus === 'in_progress' && !task.assigneeId && currentUser) {
                     task.assigneeId = currentUser.id;
                 }
@@ -581,17 +571,16 @@
             }
         }
 
+        // Modal Handlers
         function openAddTaskModal() {
+            populateAssigneeDropdown();
             document.getElementById('modal-title').innerText = '新しいタスクを追加';
             document.getElementById('task-id').value = '';
             document.getElementById('task-title').value = '';
             document.getElementById('task-desc').value = '';
             document.getElementById('task-category').value = '会場設営';
-            document.getElementById('task-status').value = 'todo';
-
-            populateAssigneeSelect();
             document.getElementById('task-assignee').value = currentUser ? currentUser.id : '';
-
+            document.getElementById('task-status').value = 'todo';
             document.getElementById('task-modal').classList.remove('hidden');
         }
 
@@ -599,27 +588,19 @@
             const task = tasks.find(t => t.id === taskId);
             if (!task) return;
 
+            populateAssigneeDropdown();
             document.getElementById('modal-title').innerText = 'タスクを編集';
             document.getElementById('task-id').value = task.id;
             document.getElementById('task-title').value = task.title;
             document.getElementById('task-desc').value = task.desc || '';
             document.getElementById('task-category').value = task.category;
-            document.getElementById('task-status').value = task.status;
-
-            populateAssigneeSelect();
             document.getElementById('task-assignee').value = task.assigneeId || '';
-
+            document.getElementById('task-status').value = task.status;
             document.getElementById('task-modal').classList.remove('hidden');
         }
 
         function closeTaskModal() {
             document.getElementById('task-modal').classList.add('hidden');
-        }
-
-        function populateAssigneeSelect() {
-            const select = document.getElementById('task-assignee');
-            select.innerHTML = `<option value="">(未定)</option>` + 
-                members.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
         }
 
         function handleTaskSubmit(e) {
@@ -631,8 +612,10 @@
             const assigneeId = document.getElementById('task-assignee').value || null;
             const status = document.getElementById('task-status').value;
 
+            if (!title) return;
+
             if (id) {
-                // Update
+                // Edit
                 const task = tasks.find(t => t.id === id);
                 if (task) {
                     task.title = title;
@@ -644,7 +627,7 @@
                 }
             } else {
                 // Create
-                const newTask = {
+                tasks.push({
                     id: 't_' + Date.now(),
                     title,
                     desc,
@@ -652,8 +635,7 @@
                     assigneeId,
                     status,
                     updatedAt: Date.now()
-                };
-                tasks.unshift(newTask);
+                });
             }
 
             saveState();
@@ -661,22 +643,100 @@
             renderAll();
         }
 
-        function openAddMemberModal() {
+        function populateAssigneeDropdown() {
+            const select = document.getElementById('task-assignee');
+            select.innerHTML = '<option value="">(未定)</option>' + members.map(m => `
+                <option value="${m.id}">${escapeHtml(m.name)}</option>
+            `).join('');
+        }
+
+        // Member Modal
+        function openMemberModal() {
             document.getElementById('member-name').value = '';
             document.getElementById('member-modal').classList.remove('hidden');
+            renderManagedMemberList();
         }
 
         function closeMemberModal() {
             document.getElementById('member-modal').classList.add('hidden');
         }
 
+        function handleMemberSubmit(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('member-name');
+            const name = nameInput.value.trim();
+            if (!name) return;
+
+            const newMember = {
+                id: 'm_' + Date.now(),
+                name: name,
+                color: selectedColor
+            };
+
+            members.push(newMember);
+            if (!currentUser) currentUser = newMember;
+
+            saveState();
+            nameInput.value = '';
+            renderAll();
+        }
+
+        function deleteMember(memberId) {
+            if (confirm('このメンバーを削除しますか？')) {
+                members = members.filter(m => m.id !== memberId);
+                // Reset assignee on tasks
+                tasks.forEach(t => {
+                    if (t.assigneeId === memberId) t.assigneeId = null;
+                });
+                if (currentUser && currentUser.id === memberId) {
+                    currentUser = members[0] || null;
+                }
+                saveState();
+                renderAll();
+            }
+        }
+
+        function renderManagedMemberList() {
+            const list = document.getElementById('managed-member-list');
+            if (members.length === 0) {
+                list.innerHTML = '<p class="text-xs text-slate-400">登録メンバーはいません。</p>';
+                return;
+            }
+
+            list.innerHTML = members.map(m => `
+                <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600">
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full ${m.color} text-white flex items-center justify-center text-xs font-bold">
+                            ${escapeHtml(m.name.charAt(0))}
+                        </div>
+                        <span class="text-xs font-semibold text-slate-800 dark:text-slate-100">${escapeHtml(m.name)}</span>
+                    </div>
+                    <button onclick="deleteMember('${m.id}')" class="text-slate-400 hover:text-red-500 text-xs p-1">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
         function setupColorPicker() {
-            const buttons = document.querySelectorAll('.color-opt');
-            buttons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    buttons.forEach(b => b.classList.remove('ring-2', 'ring-offset-2', 'ring-indigo-500'));
-                    btn.classList.add('ring-2', 'ring-offset-2', 'ring-indigo-500');
-                    selectedColor = btn.getAttribute('data-color');
+            const opts = document.querySelectorAll('.color-opt');
+            opts.forEach(opt => {
+                opt.addEventListener('click', (e) => {
+                    opts.forEach(o => o.classList.remove('ring-2', 'ring-offset-2', 'ring-indigo-500'));
+                    e.currentTarget.classList.add('ring-2', 'ring-offset-2', 'ring-indigo-500');
+                    selectedColor = e.currentTarget.getAttribute('data-color');
                 });
             });
         }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+    </script>
+</body>
+</html>
