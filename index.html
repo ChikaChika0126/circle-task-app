@@ -7,20 +7,20 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <style>
     :root {
-      --primary: #4F46E5;
-      --primary-hover: #4338CA;
-      --bg: #F3F4F6;
+      --primary: #6366F1;
+      --primary-hover: #4F46E5;
+      --bg: #F8FAFC;
       --card-bg: #FFFFFF;
-      --text: #1F2937;
-      --text-muted: #6B7280;
-      --border: #E5E7EB;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
       --todo-color: #EF4444;
       --progress-color: #3B82F6;
       --done-color: #10B981;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding-bottom: 60px; }
-    header { background: white; border-bottom: 1px solid var(--border); padding: 1rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 70px; }
+    header { background: white; border-bottom: 1px solid var(--border); padding: 1rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
     .header-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
     .logo { font-weight: 800; font-size: 1.25rem; color: var(--primary); display: flex; align-items: center; gap: 8px; }
     .sync-status { font-size: 0.8rem; padding: 4px 10px; border-radius: 999px; background: #DEF7EC; color: #03543F; font-weight: 600; display: flex; align-items: center; gap: 5px; }
@@ -30,40 +30,39 @@
     
     main { max-width: 1200px; margin: 1.5rem auto; padding: 0 1rem; }
     
-    .user-selector-bar { background: white; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-    .user-selector-title { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; }
+    .user-selector-bar { background: white; padding: 1.25rem; border-radius: 16px; margin-bottom: 1.5rem; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+    .user-selector-title { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 6px; }
     .member-chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
-    .chip { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg); cursor: pointer; font-size: 0.9rem; font-weight: 600; white-space: nowrap; transition: all 0.2s; }
-    .chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .chip { padding: 8px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); cursor: pointer; font-size: 0.9rem; font-weight: 600; white-space: nowrap; transition: all 0.2s; color: var(--text); }
+    .chip.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3); }
     
     .board-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; }
-    .column { background: #EBEDF0; border-radius: 12px; padding: 1rem; min-height: 500px; display: flex; flex-direction: column; }
+    .column { background: #F1F5F9; border-radius: 16px; padding: 1.25rem; min-height: 500px; display: flex; flex-direction: column; }
     .column-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; font-weight: 700; color: var(--text); }
     .column-title { display: flex; align-items: center; gap: 8px; }
-    .badge { background: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; }
+    .badge { background: white; padding: 2px 10px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
     
     .col-todo { border-top: 4px solid var(--todo-color); }
     .col-progress { border-top: 4px solid var(--progress-color); }
     .col-done { border-top: 4px solid var(--done-color); }
 
-    .task-list { display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
-    .task-card { background: white; padding: 1rem; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: transform 0.1s, box-shadow 0.1s; cursor: grab; }
-    .task-card:active { cursor: grabbing; }
-    .task-card.dragging { opacity: 0.5; }
-    .task-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 8px; word-break: break-all; }
-    .task-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 0.8rem; color: var(--text-muted); }
-    .assignee-tag { display: flex; align-items: center; gap: 6px; font-weight: 600; background: #EEF2FF; color: var(--primary); padding: 4px 8px; border-radius: 6px; }
+    .task-list { display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
+    .task-card { background: white; padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: transform 0.15s, box-shadow 0.15s; }
+    .task-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .task-title { font-weight: 600; font-size: 1rem; margin-bottom: 8px; word-break: break-all; color: var(--text); }
+    .task-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 0.8rem; color: var(--text-muted); }
+    .assignee-tag { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; background: #EEF2FF; color: var(--primary); padding: 4px 10px; border-radius: 8px; margin-top: 8px; font-size: 0.85rem; }
     
-    .btn { padding: 6px 12px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; transition: background 0.2s; font-size: 0.85rem; }
+    .btn { padding: 8px 16px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.85rem; }
     .btn-primary { background: var(--primary); color: white; }
     .btn-primary:hover { background: var(--primary-hover); }
-    .btn-action { width: 100%; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; background: #F3F4F6; color: #374151; }
-    .btn-action:hover { background: #E5E7EB; }
+    .btn-action { width: 100%; margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; background: #F8FAFC; border: 1px solid var(--border); color: #334155; }
+    .btn-action:hover { background: #F1F5F9; color: var(--primary); border-color: var(--primary); }
 
-    .add-task-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border); padding: 10px 16px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+    .add-task-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border); padding: 12px 16px; box-shadow: 0 -4px 12px rgba(0,0,0,0.05); z-index: 90; }
     .add-task-form { max-width: 1200px; margin: 0 auto; display: flex; gap: 10px; }
-    .task-input { flex-grow: 1; padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; outline: none; font-size: 0.95rem; }
-    .task-input:focus { border-color: var(--primary); }
+    .task-input { flex-grow: 1; padding: 10px 16px; border: 1px solid var(--border); border-radius: 10px; outline: none; font-size: 0.95rem; background: var(--bg); }
+    .task-input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
   </style>
 </head>
 <body>
@@ -71,7 +70,7 @@
   <header>
     <div class="header-container">
       <div class="logo">
-        <i class="fa-solid fa-list-check"></i>
+        <i class="fa-solid fa-layer-group"></i>
         <span>サークルタスクボード</span>
       </div>
       <div id="syncStatus" class="sync-status">
@@ -83,7 +82,7 @@
 
   <main>
     <div class="user-selector-bar">
-      <div class="user-selector-title"><i class="fa-solid fa-user"></i> あなたの名前を選択してください:</div>
+      <div class="user-selector-title"><i class="fa-solid fa-user-check"></i> あなたの名前を選択してください:</div>
       <div class="member-chips" id="memberChips"></div>
     </div>
 
@@ -91,10 +90,10 @@
       <!-- 未着手 -->
       <div class="column col-todo">
         <div class="column-header">
-          <div class="column-title"><i class="fa-regular fa-circle" style="color: var(--todo-color)"></i> 未着手 (To Do)</div>
+          <div class="column-title"><i class="fa-solid fa-circle-exclamation" style="color: var(--todo-color)"></i> 未着手 (To Do)</div>
           <span class="badge" id="count-todo">0</span>
         </div>
-        <div class="task-list" id="list-todo" data-status="todo"></div>
+        <div class="task-list" id="list-todo"></div>
       </div>
 
       <!-- 進行中 -->
@@ -103,23 +102,23 @@
           <div class="column-title"><i class="fa-solid fa-spinner" style="color: var(--progress-color)"></i> 進行中 (In Progress)</div>
           <span class="badge" id="count-in_progress">0</span>
         </div>
-        <div class="task-list" id="list-in_progress" data-status="in_progress"></div>
+        <div class="task-list" id="list-in_progress"></div>
       </div>
 
       <!-- 完了 -->
       <div class="column col-done">
         <div class="column-header">
-          <div class="column-title"><i class="fa-regular fa-circle-check" style="color: var(--done-color)"></i> 完了 (Done)</div>
+          <div class="column-title"><i class="fa-solid fa-circle-check" style="color: var(--done-color)"></i> 完了 (Done)</div>
           <span class="badge" id="count-done">0</span>
         </div>
-        <div class="task-list" id="list-done" data-status="done"></div>
+        <div class="task-list" id="list-done"></div>
       </div>
     </div>
   </main>
 
   <div class="add-task-bar">
     <form class="add-task-form" id="addTaskForm">
-      <input type="text" id="taskInput" class="task-input" placeholder="+ 新しいタスク名を入力..." required>
+      <input type="text" id="taskInput" class="task-input" placeholder="+ 新しいタスクを追加..." required>
       <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> 追加</button>
     </form>
   </div>
@@ -141,7 +140,8 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const MEMBERS = ["田中", "佐藤", "鈴木", "高橋", "伊藤"];
+    // ★★★ ここでメンバー名を自由に変更できます！ ★★★
+    const MEMBERS = ["メンバーA", "メンバーB", "メンバーC", "メンバーD"];
     let currentUser = MEMBERS[0];
     let tasks = [];
 
@@ -170,7 +170,7 @@
     }, (error) => {
       console.error("Firestore error:", error);
       document.getElementById("syncStatus").classList.add("offline");
-      document.getElementById("syncText").innerText = "接続エラー (ルールを確認してください)";
+      document.getElementById("syncText").innerText = "接続エラー";
     });
 
     // タスク追加
@@ -237,10 +237,10 @@
 
           card.innerHTML = `
             <div class="task-title">${escapeHtml(task.title)}</div>
-            ${task.assignee ? `<div class="assignee-tag"><i class="fa-solid fa-user-circle"></i> ${escapeHtml(task.assignee)}</div>` : ''}
+            ${task.assignee ? `<div class="assignee-tag"><i class="fa-solid fa-user"></i> ${escapeHtml(task.assignee)}</div>` : ''}
             ${actionBtn}
             <div class="task-meta">
-              <span style="cursor:pointer;" onclick="removeTask('${task.id}')"><i class="fa-solid fa-trash"></i> 削除</span>
+              <span style="cursor:pointer;" onclick="removeTask('${task.id}')"><i class="fa-solid fa-trash-can"></i> 削除</span>
             </div>
           `;
           container.appendChild(card);
