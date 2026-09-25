@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -184,7 +189,7 @@
                 
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">タスク名 *</label>
-                    <input type="text" id="task-title" required placeholder="例: 広報用チラシの印刷" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white">
+                    <input type="text" id="task-title" required placeholder="例: ステージ音響機器の確認" class="w-full px-3 py-2 text-sm bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white">
                 </div>
 
                 <div>
@@ -271,6 +276,20 @@
     </div>
 
     <script>
+        // --- Firebase 設定 ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBEcQeqpKYyL1fEGbSpeVOFcPLc1IZA5N8",
+            authDomain: "circle-task-app-bc2c8.firebaseapp.com",
+            projectId: "circle-task-app-bc2c8",
+            storageBucket: "circle-task-app-bc2c8.firebasestorage.app",
+            messagingSenderId: "464072901257",
+            appId: "1:464072901257:web:5ff9d504ba4957e1d67c58"
+        };
+
+        // Firebase初期化
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         // State Management
         let members = [];
         let tasks = [];
@@ -278,43 +297,45 @@
         let selectedFilterUser = null;
         let selectedColor = 'bg-indigo-500';
 
-        // Category Tag Color Map
+        // カテゴリーごとの色設定
         const categoryColors = {
-            '会場設営': 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
-            '広報・SNS': 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300',
-            '企画・運営': 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300',
-            '会計・資材': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300',
-            'その他': 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300',
+            '設備': 'bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-200',
+            '研究室・講義室': 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300',
+            '飲食': 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
+            'デザイン': 'bg-pink-100 text-pink-800 dark:bg-pink-900/40 dark:text-pink-300',
+            '広報': 'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300',
+            'ホームページ': 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/40 dark:text-cyan-300',
+            'ステージイベント': 'bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-300',
+            '学友会企画': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300',
+            'その他': 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400',
         };
 
         window.addEventListener('DOMContentLoaded', () => {
-            loadState();
             setupColorPicker();
-            renderAll();
+            subscribeFirebaseData();
         });
 
-        function loadState() {
-            const savedMembers = localStorage.getItem('club_app_members');
-            const savedTasks = localStorage.getItem('club_app_tasks');
-            const savedUser = localStorage.getItem('club_app_current_user');
+        // Firebaseのリアルタイム監視
+        function subscribeFirebaseData() {
+            // メンバーのリアルタイム同期
+            db.collection('members').onSnapshot(snapshot => {
+                members = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                const savedUser = localStorage.getItem('club_app_current_user');
+                currentUser = members.find(m => m.id === savedUser) || members[0] || null;
+                
+                renderAll();
+            }, error => {
+                console.error("Firestore Error (members):", error);
+            });
 
-            // 初期データは空の配列にする
-            members = savedMembers ? JSON.parse(savedMembers) : [];
-            tasks = savedTasks ? JSON.parse(savedTasks) : [];
-            
-            currentUser = savedUser ? members.find(m => m.id === savedUser) || members[0] || null : members[0] || null;
-            
-            saveState();
-        }
-
-        function saveState() {
-            localStorage.setItem('club_app_members', JSON.stringify(members));
-            localStorage.setItem('club_app_tasks', JSON.stringify(tasks));
-            if (currentUser) {
-                localStorage.setItem('club_app_current_user', currentUser.id);
-            } else {
-                localStorage.removeItem('club_app_current_user');
-            }
+            // タスクのリアルタイム同期
+            db.collection('tasks').onSnapshot(snapshot => {
+                tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderAll();
+            }, error => {
+                console.error("Firestore Error (tasks):", error);
+            });
         }
 
         function renderAll() {
@@ -353,7 +374,7 @@
             if (members.length === 0) {
                 container.innerHTML = `
                     <div class="text-xs text-slate-400 p-2">
-                        メンバーが登録されていません。右上の「管理」から追加してください。
+                        メンバーが登録されていません。右上の「管理」ボタンからメンバーを追加してください。
                     </div>
                 `;
                 return;
@@ -394,7 +415,6 @@
             };
 
             const counts = { todo: 0, in_progress: 0, done: 0 };
-
             Object.values(cols).forEach(col => col.innerHTML = '');
 
             const filteredTasks = selectedFilterUser 
@@ -499,49 +519,39 @@
 
         function changeCurrentUser(memberId) {
             currentUser = members.find(m => m.id === memberId) || null;
-            saveState();
+            if (currentUser) {
+                localStorage.setItem('club_app_current_user', currentUser.id);
+            }
             renderAll();
         }
 
         function claimTask(taskId) {
             if (!currentUser) {
-                alert('最初にメンバーを登録し、ログイン者として選択してください。');
+                alert('最初にメンバーを登録し、右上のドロップダウンからご自身の名前を選択してください。');
                 return;
             }
-            const task = tasks.find(t => t.id === taskId);
-            if (task) {
-                task.assigneeId = currentUser.id;
-                task.status = 'in_progress';
-                task.updatedAt = Date.now();
-                saveState();
-                renderAll();
-            }
+            db.collection('tasks').doc(taskId).update({
+                assigneeId: currentUser.id,
+                status: 'in_progress',
+                updatedAt: Date.now()
+            });
         }
 
         function completeTask(taskId) {
-            const task = tasks.find(t => t.id === taskId);
-            if (task) {
-                task.status = 'done';
-                task.updatedAt = Date.now();
-                saveState();
-                renderAll();
-            }
+            db.collection('tasks').doc(taskId).update({
+                status: 'done',
+                updatedAt: Date.now()
+            });
         }
 
         function deleteTask(taskId) {
             if (confirm('このタスクを削除しますか？')) {
-                tasks = tasks.filter(t => t.id !== taskId);
-                saveState();
-                renderAll();
+                db.collection('tasks').doc(taskId).delete();
             }
         }
 
         function toggleFilterUser(memberId) {
-            if (selectedFilterUser === memberId) {
-                selectedFilterUser = null;
-            } else {
-                selectedFilterUser = memberId;
-            }
+            selectedFilterUser = (selectedFilterUser === memberId) ? null : memberId;
             renderAll();
         }
 
@@ -565,24 +575,21 @@
             const task = tasks.find(t => t.id === taskId);
             
             if (task) {
-                task.status = newStatus;
+                const updateData = { status: newStatus, updatedAt: Date.now() };
                 if (newStatus === 'in_progress' && !task.assigneeId && currentUser) {
-                    task.assigneeId = currentUser.id;
+                    updateData.assigneeId = currentUser.id;
                 }
-                task.updatedAt = Date.now();
-                saveState();
-                renderAll();
+                db.collection('tasks').doc(taskId).update(updateData);
             }
         }
 
-        // Modal Handlers
         function openAddTaskModal() {
             populateAssigneeDropdown();
             document.getElementById('modal-title').innerText = '新しいタスクを追加';
             document.getElementById('task-id').value = '';
             document.getElementById('task-title').value = '';
             document.getElementById('task-desc').value = '';
-            document.getElementById('task-category').value = '会場設営';
+            document.getElementById('task-category').value = '設備';
             document.getElementById('task-assignee').value = currentUser ? currentUser.id : '';
             document.getElementById('task-status').value = 'todo';
             document.getElementById('task-modal').classList.remove('hidden');
@@ -618,33 +625,22 @@
 
             if (!title) return;
 
+            const taskData = {
+                title,
+                desc,
+                category,
+                assigneeId,
+                status,
+                updatedAt: Date.now()
+            };
+
             if (id) {
-                // Edit
-                const task = tasks.find(t => t.id === id);
-                if (task) {
-                    task.title = title;
-                    task.desc = desc;
-                    task.category = category;
-                    task.assigneeId = assigneeId;
-                    task.status = status;
-                    task.updatedAt = Date.now();
-                }
+                db.collection('tasks').doc(id).update(taskData);
             } else {
-                // Create
-                tasks.push({
-                    id: 't_' + Date.now(),
-                    title,
-                    desc,
-                    category,
-                    assigneeId,
-                    status,
-                    updatedAt: Date.now()
-                });
+                db.collection('tasks').add(taskData);
             }
 
-            saveState();
             closeTaskModal();
-            renderAll();
         }
 
         function populateAssigneeDropdown() {
@@ -654,7 +650,6 @@
             `).join('');
         }
 
-        // Member Modal
         function openMemberModal() {
             document.getElementById('member-name').value = '';
             document.getElementById('member-modal').classList.remove('hidden');
@@ -671,32 +666,17 @@
             const name = nameInput.value.trim();
             if (!name) return;
 
-            const newMember = {
-                id: 'm_' + Date.now(),
+            db.collection('members').add({
                 name: name,
                 color: selectedColor
-            };
+            });
 
-            members.push(newMember);
-            if (!currentUser) currentUser = newMember;
-
-            saveState();
             nameInput.value = '';
-            renderAll();
         }
 
         function deleteMember(memberId) {
             if (confirm('このメンバーを削除しますか？')) {
-                members = members.filter(m => m.id !== memberId);
-                // Reset assignee on tasks
-                tasks.forEach(t => {
-                    if (t.assigneeId === memberId) t.assigneeId = null;
-                });
-                if (currentUser && currentUser.id === memberId) {
-                    currentUser = members[0] || null;
-                }
-                saveState();
-                renderAll();
+                db.collection('members').doc(memberId).delete();
             }
         }
 
